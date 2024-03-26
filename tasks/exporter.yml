@@ -1,0 +1,66 @@
+---
+- name: Getting kafka exporter
+  get_url:
+    url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v{{ exporterVersion }}/kafka_exporter-{{ exporterVersion }}.linux-{{ exporterArch }}.tar.gz'
+    dest: '/tmp/kafka-exporter.tar.gz'
+    mode: 0444
+
+- name: Unpacking kafka exporter
+  unarchive:
+    src: '/tmp/kafka-exporter.tar.gz'
+    dest: '/usr/bin'
+    remote_src: yes
+    owner: 'root'
+    group: 'root'
+    extra_opts: [--strip-components=1]
+    exclude:
+      - NOTICE
+      - LICENSE
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Deleting kafka archive
+  file:
+    path: '/tmp/kafka-exporter.tar.gz'
+    state: absent
+
+- name: Create user for exporter
+  user:
+    name: '{{ exporterUser }}'
+    create_home: no
+    system: yes
+  
+- name: Creating sysconfig dir for exporter
+  file:
+    path: '/etc/sysconfig'
+    state: directory
+    mode: 0755
+
+- name: Create sysconfig
+  template:
+    src: 'kafka_exporter.sysconfig.j2'
+    dest: '/etc/sysconfig/kafka_exporter'
+    owner: root
+    group: root
+    mode: 0644
+  register: result
+
+- name: Create systemd unit
+  template:
+    src: 'kafka_exporter.service.j2'
+    dest: '/etc/systemd/system/kafka_exporter.service'
+    owner: root
+    group: root
+    mode: 0644
+  register: result
+
+- name: systemd reload
+  systemd:
+    daemon_reload: yes
+  when: result.changed
+
+- name: Starting kafka exporter
+  service:
+    name: kafka_exporter
+    enabled: yes
+    state: restarted
+  ignore_errors: '{{ ansible_check_mode }}'

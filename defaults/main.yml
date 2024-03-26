@@ -1,0 +1,19 @@
+---
+kafkaVersion: "3.6.0"
+kafkaHome: "/opt/kafka"
+kafkaBinDir: "{{ kafkaHome }}/bin"
+kafkaUser: "kafka"
+kafkaHeapSize: 1G
+autoCreateTopicsEnable: false
+
+## Topics to be created with parameters
+# kafkaTopics:
+#   - name: test
+#     replicationFactor: "{{ '1' if play_hosts | length == 1 else '2' }}"
+#     partitions:  1
+#     retentionBytes: 5368709120
+
+exporterInstall: false
+exporterVersion: "1.7.0"
+exporterUser: "kafka_exporter"
+exporterArch: 'amd64'

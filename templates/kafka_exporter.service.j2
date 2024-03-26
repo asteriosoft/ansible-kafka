@@ -1,0 +1,12 @@
+[Unit]
+Description=Kafka Exporter
+Wants=kafka.service
+After=kafka.service
+
+[Service]
+User={{ exporterUser }}
+EnvironmentFile=/etc/sysconfig/kafka_exporter
+ExecStart=/usr/bin/kafka_exporter $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,95 @@
+--- 
+- name: Create Kafka home directory
+  file:
+    path: "{{ kafkaHome }}"
+    state: directory
+
+- name: Getting kafka archive
+  get_url:
+    url: https://archive.apache.org/dist/kafka/{{ kafkaVersion }}/kafka_2.13-{{ kafkaVersion }}.tgz
+    dest: "/tmp/kafka.tgz"
+    mode: 0444
+
+- name: Unpacking kafka archive
+  unarchive:
+    src: "/tmp/kafka.tgz"
+    dest: "{{ kafkaHome }}"
+    extra_opts: [--strip-components=1]
+    remote_src: yes
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Deleting source archive
+  file:
+    path: "/tmp/kafka.tgz"
+    state: absent
+
+- name: Create Kafka data directory
+  file:
+    path: "{{ kafkaHome }}/data"
+    state: directory
+
+- name: Copy kafka server.properties
+  template:
+    src: "server.properties.j2"
+    dest: "{{ kafkaHome }}/config/server.properties"
+  register: config
+
+- name: Formating kafka data dir for Kraft
+  shell: | 
+    groups="{{ group_names | join }}"
+    if [ ${{ "{" }}{{ "#" }}groups} -lt 15 ]
+    then 
+      clusterId=`echo $groups{,,,} | base64 | cut -b 1-22`
+    else
+      clusterId=`echo $groups | base64 | cut -b 1-22`
+    fi
+    {{ kafkaHome }}/bin/kafka-storage.sh format --ignore-formatted -t $clusterId -c {{ kafkaHome }}/config/server.properties 
+  args:
+    executable: /bin/bash
+
+- name: Creating system user
+  user:
+    name: "{{ kafkaUser }}"
+    home: "{{ kafkaHome }}"
+
+- name: Creating kafka.service script
+  template:
+    src: "kafka.service.j2"
+    dest: "/etc/systemd/system/kafka.service"
+    owner: root
+    group: root
+  register: systemd
+
+- name: Chown for system user
+  file:
+    dest: "{{ kafkaHome }}"
+    state: directory
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaUser }}"
+    recurse: yes
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+  when: systemd.changed
+
+- name: restart kafka
+  systemd:
+    name: kafka
+    state: restarted
+    enabled: yes
+  when: systemd.changed or config.changed
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Create topics
+  import_tasks:
+    file: topics.yml
+  tags: topics
+  when: kafkaTopics is defined
+
+- name: Install kafka exporter
+  import_tasks:
+    file: exporter.yml
+  tags: exporter
+  when: exporterInstall
+  run_once: true
