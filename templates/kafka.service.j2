@@ -6,11 +6,11 @@ After=network.target remote-fs.target
 
 [Service]
 Type=simple
-User={{ kafkaUser }}
-Group={{ kafkaUser }}
-ExecStart={{ kafkaHome }}/bin/kafka-server-start.sh {{ kafkaHome }}/config/server.properties
-ExecStop={{ kafkaHome }}/bin/kafka-server-stop.sh
-Environment="KAFKA_HEAP_OPTS=-Xmx{{ kafkaHeapSize }} -Xms{{ kafkaHeapSize }}"
+User={{ kafka_user }}
+Group={{ kafka_user }}
+ExecStart={{ kafka_home_dir }}/bin/kafka-server-start.sh {{ kafka_home_dir }}/config/server.properties
+ExecStop={{ kafka_home_dir }}/bin/kafka-server-stop.sh
+Environment="KAFKA_HEAP_OPTS=-Xmx{{ kafka_heap_size }} -Xms{{ kafka_heap_size }}"
 
 [Install]
 WantedBy=multi-user.target

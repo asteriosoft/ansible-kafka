@@ -2,17 +2,17 @@
 - name: Create topics
   command:
     argv: 
-      - "{{ kafkaBinDir }}/kafka-topics.sh"
+      - "{{ kafka_bin_dir }}/kafka-topics.sh"
       - --create 
       - --if-not-exists
       - --bootstrap-server
-      - "{{ private_ip | default('127.0.0.1') }}:9092"
+      - "{{ kafka_ip }}:9092"
       - --replication-factor 
-      - "{{ item.replicationFactor }}"
+      - "{{ item.replication_factor }}"
       - --partitions 
       - "{{ item.partitions }}"
       - --config
-      - "retention.bytes={{ item.retentionBytes }}"
+      - "retention.bytes={{ item.retention_bytes }}"
       - --topic
       - "{{ item.name }}"
-  loop: "{{ kafkaTopics }}"
+  loop: "{{ kafka_topics }}"

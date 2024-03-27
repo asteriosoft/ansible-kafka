@@ -16,18 +16,18 @@ Example Playbook
   gather_facts: yes
 
   vars:
-    kafkaVersion: "3.6.0"
-    kafkaHeapSize: 1G
-    autoCreateTopicsEnable: false
-    kafkaTopics:
+    kafka_version: "3.6.0"
+    kafka_heap_size: 1G
+    kafka_topics_auto_create: false
+    kafka_topics:
       - name: test
-        replicationFactor: 1
+        replication_factor: 1
         partitions:  1
-        retentionBytes: 5368709120
-    kafkaIpAddress: "{{ private_ip }}"
-    kafkaNodeId: "{{ labels.node_id }}"
-    exporterInstall: true
-    exporterVersion: "1.7.0"
+        retention_bytes: 5368709120
+    kafka_ip: "{{ private_ip }}"
+    kafka_node_id: "{{ labels.node_id }}"
+    kafka_exporter_install: true
+    kafka_exporter_version: "1.7.0"
 
   roles:
     - kafka

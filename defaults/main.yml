@@ -1,30 +1,30 @@
 ---
-kafkaVersion: "3.6.0"
-kafkaHome: "/opt/kafka"
-kafkaBinDir: "{{ kafkaHome }}/bin"
-kafkaUser: "kafka"
-kafkaHeapSize: 1G
-autoCreateTopicsEnable: false
+kafka_version: "3.6.0"
+kafka_home_dir: "/opt/kafka"
+kafka_bin_dir: "{{ kafkaHome }}/bin"
+kafka_user: "kafka"
+kafka_heap_size: 1G
+kafka_topics_auto_create: false
 
 # For AWS
-#kafkaIpAddress: "{{ private_ip_address }}"
+#kafka_ip: "{{ private_ip_address }}"
 
 # For GCP
-#kafkaIpAddress: "{{ private_ip }}"
-#kafkaNodeId: "{{ labels.node_id }}"
+#kafka_ip: "{{ private_ip }}"
+#kafka_node_id: "{{ labels.node_id }}"
 
 # Default
-kafkaIpAddress: "127.0.0.1"
-kafkaNodeId: "{{ play_hosts.index(inventory_hostname) }}"
+kafka_ip: "127.0.0.1"
+kafka_node_id: "{{ play_hosts.index(inventory_hostname) }}"
 
 ## Topics to be created with parameters
-# kafkaTopics:
+# kafka_topics:
 #   - name: test
-#     replicationFactor: "{{ '1' if play_hosts | length == 1 else '2' }}"
+#     replication_factor: 1
 #     partitions:  1
-#     retentionBytes: 5368709120
+#     retention_bytes: 5368709120
 
-exporterInstall: false
-exporterVersion: "1.7.0"
-exporterUser: "kafka_exporter"
-exporterArch: "amd64"
+kafka_exporter_install: false
+kafka_exporter_version: "1.7.0"
+kafka_exporter_user: "kafka_exporter"
+kafka_exporter_arch: "amd64"

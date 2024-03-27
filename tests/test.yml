@@ -1,5 +1,12 @@
 ---
 - hosts: localhost
+  vars:
+    kafka_topics:
+      - name: test
+        replication_factor: 1
+        partitions:  1
+        retention_bytes: 5368709120
+    kafka_exporter_install: true
 
   roles:
     - { role: ../../kafka }

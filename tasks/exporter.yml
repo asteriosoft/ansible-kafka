@@ -1,7 +1,7 @@
 ---
 - name: Getting kafka exporter
   get_url:
-    url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v{{ exporterVersion }}/kafka_exporter-{{ exporterVersion }}.linux-{{ exporterArch }}.tar.gz'
+    url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v{{ kafka_exporter_version }}/kafka_exporter-{{ kafka_exporter_version }}.linux-{{ kafka_exporter_arch }}.tar.gz'
     dest: '/tmp/kafka-exporter.tar.gz'
     mode: 0444
 
@@ -25,7 +25,7 @@
 
 - name: Create user for exporter
   user:
-    name: '{{ exporterUser }}'
+    name: '{{ kafka_exporter_user }}'
     create_home: no
     system: yes
   
@@ -53,7 +53,7 @@
     mode: 0644
   register: result
 
-- name: systemd reload
+- name: Systemd reload
   systemd:
     daemon_reload: yes
   when: result.changed

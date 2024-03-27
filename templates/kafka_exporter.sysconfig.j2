@@ -1,9 +1,5 @@
 OPTIONS="
-{% if play_hosts | length > 1 %}
 {% for host in play_hosts %}
---kafka.server={{ hostvars[host].private_ip }}:9092
+--kafka.server={{ hostvars[host].kafka_ip }}:9092
 {% endfor %}
-{% else %}
---kafka.server=127.0.0.1:9092
-{% endif %}
 "

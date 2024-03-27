@@ -4,7 +4,7 @@ Wants=kafka.service
 After=kafka.service
 
 [Service]
-User={{ exporterUser }}
+User={{ kafka_exporter_user }}
 EnvironmentFile=/etc/sysconfig/kafka_exporter
 ExecStart=/usr/bin/kafka_exporter $OPTIONS
 

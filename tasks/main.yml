@@ -1,24 +1,25 @@
 ---
 - name: Set hostvars
   set_fact:
-    kafka_ip: "{{ kafkaIpAddress }}"
-    kafka_node_id: "{{ kafkaNodeId }}"
+    kafka_ip: "{{ kafka_ip }}"
+    kafka_node_id: "{{ kafka_node_id }}"
+  tags: exporter
 
 - name: Create Kafka home directory
   file:
-    path: "{{ kafkaHome }}"
+    path: "{{ kafka_home_dir }}"
     state: directory
 
 - name: Getting kafka archive
   get_url:
-    url: https://archive.apache.org/dist/kafka/{{ kafkaVersion }}/kafka_2.13-{{ kafkaVersion }}.tgz
+    url: https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_2.13-{{ kafka_version }}.tgz
     dest: "/tmp/kafka.tgz"
     mode: 0444
 
 - name: Unpacking kafka archive
   unarchive:
     src: "/tmp/kafka.tgz"
-    dest: "{{ kafkaHome }}"
+    dest: "{{ kafka_home_dir }}"
     extra_opts: [--strip-components=1]
     remote_src: yes
   ignore_errors: '{{ ansible_check_mode }}'
@@ -30,13 +31,13 @@
 
 - name: Create Kafka data directory
   file:
-    path: "{{ kafkaHome }}/data"
+    path: "{{ kafka_home_dir }}/data"
     state: directory
 
 - name: Copy kafka server.properties
   template:
     src: "server.properties.j2"
-    dest: "{{ kafkaHome }}/config/server.properties"
+    dest: "{{ kafka_home_dir }}/config/server.properties"
   register: config
 
 - name: Formating kafka data dir for Kraft
@@ -48,14 +49,14 @@
     else
       clusterId=`echo $groups | base64 | cut -b 1-22`
     fi
-    {{ kafkaHome }}/bin/kafka-storage.sh format --ignore-formatted -t $clusterId -c {{ kafkaHome }}/config/server.properties 
+    {{ kafka_home_dir }}/bin/kafka-storage.sh format --ignore-formatted -t $clusterId -c {{ kafka_home_dir }}/config/server.properties 
   args:
     executable: /bin/bash
 
 - name: Creating system user
   user:
-    name: "{{ kafkaUser }}"
-    home: "{{ kafkaHome }}"
+    name: "{{ kafka_user }}"
+    home: "{{ kafka_home_dir }}"
 
 - name: Creating kafka.service script
   template:
@@ -67,18 +68,18 @@
 
 - name: Chown for system user
   file:
-    dest: "{{ kafkaHome }}"
+    dest: "{{ kafka_home_dir }}"
     state: directory
-    owner: "{{ kafkaUser }}"
-    group: "{{ kafkaUser }}"
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_user }}"
     recurse: yes
 
-- name: reload systemd
+- name: Reload systemd
   systemd:
     daemon_reload: yes
   when: systemd.changed
 
-- name: restart kafka
+- name: Restart kafka
   systemd:
     name: kafka
     state: restarted
@@ -90,11 +91,11 @@
   import_tasks:
     file: topics.yml
   tags: topics
-  when: kafkaTopics is defined
+  when: kafka_topics is defined
 
 - name: Install kafka exporter
   import_tasks:
     file: exporter.yml
   tags: exporter
-  when: exporterInstall
+  when: kafka_exporter_install
   run_once: true
