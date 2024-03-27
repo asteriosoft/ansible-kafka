@@ -85,7 +85,7 @@
     state: restarted
     enabled: yes
   when: systemd.changed or config.changed
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Create topics
   import_tasks:

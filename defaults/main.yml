@@ -1,7 +1,7 @@
 ---
 kafka_version: "3.6.0"
 kafka_home_dir: "/opt/kafka"
-kafka_bin_dir: "{{ kafkaHome }}/bin"
+kafka_bin_dir: "{{ kafka_home_dir }}/bin"
 kafka_user: "kafka"
 kafka_heap_size: 1G
 kafka_topics_auto_create: false
