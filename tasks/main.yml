@@ -1,4 +1,9 @@
---- 
+---
+- name: Set hostvars
+  set_fact:
+    kafka_ip: "{{ kafkaIpAddress }}"
+    kafka_node_id: "{{ kafkaNodeId }}"
+
 - name: Create Kafka home directory
   file:
     path: "{{ kafkaHome }}"

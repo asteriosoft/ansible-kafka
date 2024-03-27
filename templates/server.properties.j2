@@ -25,28 +25,18 @@ process.roles=broker,controller
 
 # The node id associated with this instance's roles
 
-{% if play_hosts | length > 1 %}
-node.id={{ labels.node_id }}
-{% else %}
-node.id=1
-{% endif %}
+node.id={{ kafka_node_id }}
 
 # The connect string for the controller quorum
 
-{% if play_hosts | length > 1 %}
-
 {% set ns = namespace(voters='controller.quorum.voters=') %}
 {% for host in play_hosts %}
-{% set ns.voters = ns.voters + hostvars[host].labels.node_id + '@' + hostvars[host].private_ip + ':9094'%}
+{% set ns.voters = ns.voters + hostvars[host].kafka_node_id + '@' + hostvars[host].kafka_ip + ':9094'%}
 {% if not loop.last %}
 {% set ns.voters = ns.voters + ',' %}
 {% endif %}
 {% endfor %}
 {{ ns.voters }}
-
-{% else %}
-controller.quorum.voters=1@{{ private_ip | default('127.0.0.1') }}:9094
-{% endif %}
 
 ############################# Socket Server Settings #############################
 
@@ -58,14 +48,14 @@ controller.quorum.voters=1@{{ private_ip | default('127.0.0.1') }}:9094
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-listeners=PLAINTEXT://0.0.0.0:9092,CONTROLLER://{{ private_ip | default('127.0.0.1') }}:9094
+listeners=PLAINTEXT://0.0.0.0:9092,CONTROLLER://{{ kafka_ip }}:9094
 
 # Name of listener used for communication between brokers.
 inter.broker.listener.name=PLAINTEXT
 
 # Listener name, hostname and port the broker will advertise to clients.
 # If not set, it uses the value for "listeners".
-advertised.listeners=PLAINTEXT://{{ private_ip | default('127.0.0.1') }}:9092
+advertised.listeners=PLAINTEXT://{{ kafka_ip }}:9092
 
 # A comma-separated list of the names of the listeners used by the controller.
 # If no explicit mapping set in `listener.security.protocol.map`, default will be using PLAINTEXT protocol

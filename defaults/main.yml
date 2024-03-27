@@ -6,6 +6,17 @@ kafkaUser: "kafka"
 kafkaHeapSize: 1G
 autoCreateTopicsEnable: false
 
+# For AWS
+#kafkaIpAddress: "{{ private_ip_address }}"
+
+# For GCP
+#kafkaIpAddress: "{{ private_ip }}"
+#kafkaNodeId: "{{ labels.node_id }}"
+
+# Default
+kafkaIpAddress: "127.0.0.1"
+kafkaNodeId: "{{ play_hosts.index(inventory_hostname) }}"
+
 ## Topics to be created with parameters
 # kafkaTopics:
 #   - name: test
@@ -16,4 +27,4 @@ autoCreateTopicsEnable: false
 exporterInstall: false
 exporterVersion: "1.7.0"
 exporterUser: "kafka_exporter"
-exporterArch: 'amd64'
+exporterArch: "amd64"

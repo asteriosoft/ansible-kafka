@@ -24,6 +24,8 @@ Example Playbook
         replicationFactor: 1
         partitions:  1
         retentionBytes: 5368709120
+    kafkaIpAddress: "{{ private_ip }}"
+    kafkaNodeId: "{{ labels.node_id }}"
     exporterInstall: true
     exporterVersion: "1.7.0"
 
