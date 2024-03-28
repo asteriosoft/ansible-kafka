@@ -22,7 +22,7 @@
     dest: "{{ kafka_home_dir }}"
     extra_opts: [--strip-components=1]
     remote_src: yes
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Deleting source archive
   file:
