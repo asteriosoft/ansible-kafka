@@ -8,6 +8,7 @@ kafka_topics_auto_create: false
 
 # For AWS
 #kafka_ip: "{{ private_ip_address }}"
+#kafka_node_id: "{{ tags.node_id }}"
 
 # For GCP
 #kafka_ip: "{{ private_ip }}"
